@@ -6,6 +6,7 @@ fn main() {
     let mut build = cc::Build::new();
     build
         .cpp(true)
+        .define("NDEBUG", None)
         .define("_LIBRYZENADJ_INTERNAL", None)
         .include("ryzenadj/lib")
         .include("ryzenadj/lib/win32")
@@ -17,6 +18,11 @@ fn main() {
 
     if cfg!(windows) {
         build.define("_WIN32", None);
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let lib_dir = PathBuf::from(manifest_dir).join("ryzenadj").join("win32");
+        println!("cargo:rustc-link-search=native={}", lib_dir.display());
+        println!("cargo:rustc-link-lib=inpoutx64");
+        println!("cargo:rustc-link-lib=WinRing0x64");
     } else if cfg!(unix) {
         build
             .file("ryzenadj/lib/linux/osdep_linux.c")

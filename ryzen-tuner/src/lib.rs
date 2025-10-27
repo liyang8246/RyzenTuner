@@ -1,5 +1,5 @@
 use log::{info, warn};
-use ryzenadj_ffi::{cleanup_ryzenadj, get_cpu_family, init_ryzenadj, ryzen_access};
+use ryzenadj_ffi::{cleanup_ryzenadj, get_cpu_family, init_ryzenadj, init_table, ryzen_access};
 
 pub struct RyzenAdj {
     ry: ryzen_access,
@@ -25,11 +25,18 @@ impl RyzenAdj {
         let ry = unsafe { init_ryzenadj() };
         if ry.is_null() {
             warn!("Failed to initialize ryzenadj");
-            Err(())
-        } else {
-            info!("Successfully initialized ryzenadj");
-            Ok(Self { ry })
+            return Err(());
         }
+
+        let ret = unsafe { init_table(ry) };
+        if ret != 0 {
+            warn!("Failed to initialize PM table");
+            unsafe { cleanup_ryzenadj(ry) };
+            return Err(());
+        }
+
+        info!("Successfully initialized ryzenadj");
+        Ok(Self { ry })
     }
 
     pub fn get_cpu_family(&self) -> i32 {

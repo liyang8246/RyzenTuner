@@ -6,3 +6,7 @@ edition = "2024"
 [dependencies]
 log = "0.4.28"
 ryzenadj-ffi = { version = "0.1.0", path = "../ryzenadj-ffi" }
+
+[[bin]]
+name = "ryzen-tuner-cli"
+path = "src/main.rs"
