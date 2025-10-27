@@ -175,6 +175,49 @@ impl RyzenAdj {
         "dGPU Skin Temperature Limit (STT) in degree C"
     );
     get_value!(get_apu_slow_limit, get_apu_slow_limit, "APU Slow PPT Limit in mW");
+
+    get_value!(get_stapm_value, get_stapm_value, "Sustained Power Value (STAPM) in mW");
+    get_value!(get_fast_value, get_fast_value, "Fast PPT Value in mW");
+    get_value!(get_slow_value, get_slow_value, "Slow PPT Value in mW");
+    get_value!(get_apu_slow_value, get_apu_slow_value, "APU Slow PPT Value in mW");
+    get_value!(get_vrm_current_value, get_vrm_current_value, "VRM Current Value (TDC) in mA");
+    get_value!(get_vrmsoc_current_value, get_vrmsoc_current_value, "VRM SoC Current Value (TDC) in mA");
+    get_value!(get_vrmmax_current_value, get_vrmmax_current_value, "VRM Maximum Current Value (EDC) in mA");
+    get_value!(get_vrmsocmax_current_value, get_vrmsocmax_current_value, "VRM SoC Maximum Current Value (EDC) in mA");
+    get_value!(get_tctl_temp_value, get_tctl_temp_value, "Tctl Temperature Value in degree C");
+    get_value!(get_apu_skin_temp_value, get_apu_skin_temp_value, "APU Skin Temperature Value (STT) in degree C");
+    get_value!(get_dgpu_skin_temp_value, get_dgpu_skin_temp_value, "dGPU Skin Temperature Value (STT) in degree C");
+
+    get_value!(get_cclk_setpoint, get_cclk_setpoint, "CCLK Boost Setpoint");
+    get_value!(get_cclk_busy_value, get_cclk_busy_value, "CCLK Busy Value");
+    get_value!(get_l3_clk, get_l3_clk, "L3 Clock in MHz");
+    get_value!(get_l3_logic, get_l3_logic, "L3 Logic");
+    get_value!(get_l3_vddm, get_l3_vddm, "L3 VDDM");
+    get_value!(get_l3_temp, get_l3_temp, "L3 Temperature in degree C");
+    get_value!(get_gfx_clk, get_gfx_clk, "GFX Clock in MHz");
+    get_value!(get_gfx_temp, get_gfx_temp, "GFX Temperature in degree C");
+    get_value!(get_gfx_volt, get_gfx_volt, "GFX Voltage in V");
+    get_value!(get_mem_clk, get_mem_clk, "Memory Clock in MHz");
+    get_value!(get_fclk, get_fclk, "FCLK in MHz");
+    get_value!(get_soc_power, get_soc_power, "SoC Power in W");
+    get_value!(get_soc_volt, get_soc_volt, "SoC Voltage in V");
+    get_value!(get_socket_power, get_socket_power, "Socket Power in W");
+}
+
+macro_rules! get_core_value {
+    ($func_name:ident, $ffi_func:ident, $doc:expr) => {
+        #[doc = $doc]
+        pub fn $func_name(&self, core: u32) -> f32 {
+            unsafe { ryzenadj_ffi::$ffi_func(self.ry, core) }
+        }
+    };
+}
+
+impl RyzenAdj {
+    get_core_value!(get_core_clk, get_core_clk, "Get Core Clock in MHz");
+    get_core_value!(get_core_volt, get_core_volt, "Get Core Voltage in V");
+    get_core_value!(get_core_power, get_core_power, "Get Core Power in W");
+    get_core_value!(get_core_temp, get_core_temp, "Get Core Temperature in degree C");
 }
 
 impl Drop for RyzenAdj {
