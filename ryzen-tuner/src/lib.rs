@@ -34,8 +34,27 @@ impl RyzenAdj {
         Ok(Self { ry })
     }
 
-    pub fn get_cpu_family(&self) -> i32 {
-        unsafe { get_cpu_family(self.ry) }
+    pub fn get_cpu_family(&self) -> &'static str {
+        let family_id = unsafe { get_cpu_family(self.ry) };
+        match family_id {
+            0 => "Raven",
+            1 => "Picasso",
+            2 => "Renoir",
+            3 => "Cezanne",
+            4 => "Dali",
+            5 => "Lucienne",
+            6 => "Vangogh",
+            7 => "Rembrandt",
+            8 => "Mendocino",
+            9 => "Phoenix",
+            10 => "Hawkpoint",
+            11 => "Dragonrange",
+            12 => "Krackanpoint",
+            13 => "Strixpoint",
+            14 => "Strixhalo",
+            15 => "Firerange",
+            _ => "Unknown",
+        }
     }
 
     set_value!(set_stapm_limit, set_stapm_limit, "Sustained Power Limit (STAPM) in mW");
@@ -109,6 +128,53 @@ impl RyzenAdj {
         set_skin_temp_power_limit,
         "Skin Temperature Power Limit in mW"
     );
+}
+
+macro_rules! get_value {
+    ($func_name:ident, $ffi_func:ident, $doc:expr) => {
+        #[doc = $doc]
+        pub fn $func_name(&self) -> f32 {
+            unsafe { ryzenadj_ffi::$ffi_func(self.ry) }
+        }
+    };
+}
+
+impl RyzenAdj {
+    get_value!(get_stapm_limit, get_stapm_limit, "Sustained Power Limit (STAPM) in mW");
+    get_value!(get_fast_limit, get_fast_limit, "Fast PPT Limit in mW");
+    get_value!(get_slow_limit, get_slow_limit, "Slow PPT Limit in mW");
+    get_value!(get_slow_time, get_slow_time, "Slow PPT Constant Time in seconds");
+    get_value!(get_stapm_time, get_stapm_time, "STAPM Constant Time in seconds");
+    get_value!(get_tctl_temp, get_tctl_temp, "Tctl Temperature Limit in degree C");
+    get_value!(get_vrm_current, get_vrm_current, "VRM Current Limit (TDC) in mA");
+    get_value!(
+        get_vrmsoc_current,
+        get_vrmsoc_current,
+        "VRM SoC Current Limit (TDC) in mA"
+    );
+    get_value!(
+        get_vrmmax_current,
+        get_vrmmax_current,
+        "VRM Maximum Current Limit (EDC) in mA"
+    );
+    get_value!(
+        get_vrmsocmax_current,
+        get_vrmsocmax_current,
+        "VRM SoC Maximum Current Limit (EDC) in mA"
+    );
+    get_value!(get_psi0_current, get_psi0_current, "PSI0 VDD Current Limit in mA");
+    get_value!(get_psi0soc_current, get_psi0soc_current, "PSI0 SoC Current Limit in mA");
+    get_value!(
+        get_apu_skin_temp_limit,
+        get_apu_skin_temp_limit,
+        "APU Skin Temperature Limit (STT) in degree C"
+    );
+    get_value!(
+        get_dgpu_skin_temp_limit,
+        get_dgpu_skin_temp_limit,
+        "dGPU Skin Temperature Limit (STT) in degree C"
+    );
+    get_value!(get_apu_slow_limit, get_apu_slow_limit, "APU Slow PPT Limit in mW");
 }
 
 impl Drop for RyzenAdj {
