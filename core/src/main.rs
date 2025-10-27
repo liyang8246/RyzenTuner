@@ -1,4 +1,4 @@
-use ryzen_tuner::RyzenAdj;
+use ryzen_tuner_core::RyzenAdj;
 
 fn main() {
     match RyzenAdj::new() {
