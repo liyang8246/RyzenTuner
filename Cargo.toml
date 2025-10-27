@@ -1,6 +1,3 @@
-
 [workspace]
-members = [
-    "ryzen-tuner",
-    "ryzenadj-ffi",
-]
+resolver = "3"
+members = ["ryzen-tuner", "ryzenadj-ffi"]
