@@ -5,7 +5,7 @@ authors = ["liyang8246"]
 edition.workspace = true
 
 [lib]
-name = "app_lib"
+name = "ryzen_tuner_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
