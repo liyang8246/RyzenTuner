@@ -1,5 +1,8 @@
 <template>
   <UApp>
-    <NuxtPage />
+    <div class="flex-col h-screen">
+      <SideBar />
+      <NuxtPage />
+    </div>
   </UApp>
 </template>
