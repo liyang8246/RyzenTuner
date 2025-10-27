@@ -66,10 +66,7 @@ impl RyzenAdj {
     set_value!(set_min_lclk, set_min_lclk);
     set_value!(set_max_gfxclk_freq, set_max_gfxclk_freq);
     set_value!(set_min_gfxclk_freq, set_min_gfxclk_freq);
-    set_value!(
-        set_prochot_deassertion_ramp,
-        set_prochot_deassertion_ramp
-    );
+    set_value!(set_prochot_deassertion_ramp, set_prochot_deassertion_ramp);
     set_value!(set_apu_skin_temp_limit, set_apu_skin_temp_limit);
     set_value!(set_dgpu_skin_temp_limit, set_dgpu_skin_temp_limit);
     set_value!(set_apu_slow_limit, set_apu_slow_limit);
