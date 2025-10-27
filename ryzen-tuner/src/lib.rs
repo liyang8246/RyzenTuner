@@ -9,21 +9,13 @@ macro_rules! set_value {
     ($func_name:ident, $ffi_func:ident) => {
         pub fn $func_name(&self, value: u32) -> Result<(), i32> {
             let ret = unsafe { ryzenadj_ffi::$ffi_func(self.ry, value) };
-            if ret == 0 {
-                Ok(())
-            } else {
-                Err(ret)
-            }
+            if ret == 0 { Ok(()) } else { Err(ret) }
         }
     };
     ($func_name:ident, $ffi_func:ident, no_arg) => {
         pub fn $func_name(&self) -> Result<(), i32> {
             let ret = unsafe { ryzenadj_ffi::$ffi_func(self.ry) };
-            if ret == 0 {
-                Ok(())
-            } else {
-                Err(ret)
-            }
+            if ret == 0 { Ok(()) } else { Err(ret) }
         }
     };
 }
