@@ -1,11 +1,11 @@
 [package]
 name = "ryzen-tuner-core"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
 
 [dependencies]
-log = "0.4.28"
-ryzenadj-ffi = { version = "0.1.0", path = "../ryzenadj-ffi" }
+log = { workspace = true }
+ryzenadj-ffi = { workspace = true }
 
 [[bin]]
 name = "ryzen-tuner-cli"
