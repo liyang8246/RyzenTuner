@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['~/assets/main.css'],
   ssr: false,
-  modules: ['@nuxt/ui', '@nuxt/eslint'],
+  modules: ['@nuxt/ui', '@nuxt/eslint', '@pinia/nuxt'],
   vite: {
     clearScreen: false,
     envPrefix: ['VITE_', 'TAURI_'],
@@ -12,5 +12,9 @@ export default defineNuxtConfig({
   ignore: ['**/src-tauri/**'],
   imports: {
     dirs: ['types'],
+    presets: [{
+      from: '@tauri-apps/api/core',
+      imports: ['invoke'],
+    }]
   }
 })
