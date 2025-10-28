@@ -5,6 +5,8 @@ pub struct RyzenAdj {
     ry: ryzen_access,
 }
 
+unsafe impl Send for RyzenAdj {}
+
 macro_rules! set_value {
     ($func_name:ident, $ffi_func:ident, $doc:expr) => {
         #[doc = $doc]
