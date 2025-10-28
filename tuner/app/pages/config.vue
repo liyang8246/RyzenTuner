@@ -7,13 +7,17 @@ const profileNames = computed(() => profilesStore.profiles.map(p => p[0]))
 const currProfileName = ref(profileNames.value[0])
 
 const newProfileName = ref('')
-const onSubmit = (closePopover: () => void) => {
+const handleNewProfile = (closePopover: () => void) => {
   profilesStore.profiles.push([newProfileName.value, new ApuTuningConfig()])
   currProfileName.value = newProfileName.value
   closePopover()
   setTimeout(() => {
     newProfileName.value = ''
   }, 500)
+}
+const handleDeleteProfile = () => {
+  profilesStore.profiles = profilesStore.profiles.filter(p => p[0] !== currProfileName.value)
+  currProfileName.value = profileNames.value[0]
 }
 
 const accItems: AccordionItem[] = [
@@ -53,7 +57,7 @@ const accItems: AccordionItem[] = [
         <UPopover>
           <UButton icon="i-lucide-file-plus" color="neutral" variant="outline" />
           <template #content="{ close }">
-            <UForm @submit="onSubmit(close)">
+            <UForm @submit="handleNewProfile(close)">
               <UFieldGroup>
                 <UInput v-model="newProfileName" placeholder="Profile name" name="profileName" />
                 <UButton type="submit" color="neutral" variant="outline">New</UButton>
@@ -62,7 +66,7 @@ const accItems: AccordionItem[] = [
           </template>
         </UPopover>
       </div>
-      <UButton icon="i-lucide-trash-2" color="error" variant="outline" />
+      <UButton icon="i-lucide-trash-2" color="error" variant="outline" @click="handleDeleteProfile" />
     </div>
   </div>
 </template>
