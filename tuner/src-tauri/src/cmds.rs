@@ -70,28 +70,22 @@ pub async fn set_apu_tuning_config(config: ApuTuningType, state: tauri::State<'_
 #[specta]
 pub async fn storage_read(key: String) -> Result<Option<String>, String> {
     let config_dir = config_dir();
-    let config_path = config_dir.join(format!("{}.toml", key));
+    let config_path = config_dir.join(format!("{}.json", key));
 
     if !config_path.exists() {
         return Ok(None);
     }
 
     let content = fs::read_to_string(config_path).map_err(|e| e.to_string())?;
-    let toml_value: toml::Value = toml::from_str(&content).map_err(|e| e.to_string())?;
-    let json_string = serde_json::to_string(&toml_value).map_err(|e| e.to_string())?;
-
-    Ok(Some(json_string))
+    Ok(Some(content))
 }
 
 #[tauri::command]
 #[specta]
 pub async fn storage_write(key: String, value: String) -> Result<(), String> {
     let config_dir = config_dir();
-    let config_path = config_dir.join(format!("{}.toml", key));
+    let config_path = config_dir.join(format!("{}.json", key));
 
-    let json_value: serde_json::Value = serde_json::from_str(&value).map_err(|e| e.to_string())?;
-    let toml_string = toml::to_string(&json_value).map_err(|e| e.to_string())?;
-
-    fs::write(config_path, toml_string).map_err(|e| e.to_string())?;
+    fs::write(config_path, value).map_err(|e| e.to_string())?;
     Ok(())
 }

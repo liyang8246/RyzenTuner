@@ -1,20 +1,33 @@
 <script lang="ts" setup>
 import type { AccordionItem } from '@nuxt/ui'
-const items = ref(['Backlog', 'Todo', 'In Progress', 'Done'])
-const value = ref('Backlog')
+
+const profilesStore = useProfilesStore()
+
+const profileNames = computed(() => profilesStore.profiles.map(p => p[0]))
+const currProfileName = ref(profileNames.value[0])
+
+const newProfileName = ref('')
+const onSubmit = (closePopover: () => void) => {
+  profilesStore.profiles.push([newProfileName.value, new ApuTuningConfig()])
+  currProfileName.value = newProfileName.value
+  closePopover()
+  setTimeout(() => {
+    newProfileName.value = ''
+  }, 500)
+}
 
 const accItems: AccordionItem[] = [
   {
-    label: 'Icons',
-    icon: 'i-lucide-smile'
+    label: 'Temperature Tuning',
+    icon: 'i-lucide-thermometer'
   },
   {
-    label: 'Colors',
-    icon: 'i-lucide-swatch-book'
+    label: 'Power Tuning',
+    icon: 'i-lucide-trending-up'
   },
   {
-    label: 'Components',
-    icon: 'i-lucide-box'
+    label: 'VRM Tuning',
+    icon: 'i-lucide-zap'
   }
 ]
 </script>
@@ -28,7 +41,6 @@ const accItems: AccordionItem[] = [
           <p class="pb-3.5 text-sm text-muted">
             This is the {{ item.label }} panel.
           </p>
-          <USelect v-model="value" :items="items" />
         </template>
       </UAccordion>
     </div>
@@ -36,14 +48,21 @@ const accItems: AccordionItem[] = [
     <USeparator />
     <div class="flex items-center justify-between mt-2">
       <div class="flex gap-2">
-        <USelect v-model="value" :items="items" icon="i-lucide-activity" class="w-64" />
-        <UButton icon="i-lucide-file-plus" color="neutral" variant="outline" />
+        <USelect v-model="currProfileName" :items="profileNames" placeholder="Create one to start ->"
+          icon="i-lucide-activity" class="w-64" />
+        <UPopover>
+          <UButton icon="i-lucide-file-plus" color="neutral" variant="outline" />
+          <template #content="{ close }">
+            <UForm @submit="onSubmit(close)">
+              <UFieldGroup>
+                <UInput v-model="newProfileName" placeholder="Profile name" name="profileName" />
+                <UButton type="submit" color="neutral" variant="outline">New</UButton>
+              </UFieldGroup>
+            </UForm>
+          </template>
+        </UPopover>
       </div>
-      <div class="flex gap-2">
-        <UButton icon="i-lucide-save" />
-        <UButton icon="i-lucide-undo-2" color="neutral" variant="outline" />
-        <UButton icon="i-lucide-trash-2" color="error" variant="outline" />
-      </div>
+      <UButton icon="i-lucide-trash-2" color="error" variant="outline" />
     </div>
   </div>
 </template>

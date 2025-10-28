@@ -1,19 +1,13 @@
-/* eslint-disable @typescript-eslint/no-extraneous-class */
-/* eslint-disable @typescript-eslint/no-empty-object-type */
-/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
+export class ApuTuningConfig implements ApuTuningType {
+    temperature_limit: number | null = null;
+    skin_temperature_limit: number | null = null;
+    stapm_power_limit: number | null = null;
+    slow_power_limit: number | null = null;
+    slow_boost_duration: number | null = null;
+    fast_power_limit: number | null = null;
+    fast_boost_duration: number | null = null;
 
-const createNullConfig = (): ApuTuningType => {
-    return Object.fromEntries(
-        Object.keys({} as ApuTuningType).map(key => [key, null])
-    ) as ApuTuningType;
-};
-
-
-export class ApuTuningConfig {
-    constructor(config?: Partial<ApuTuningType>) {
-        const defaults = createNullConfig();
-        Object.assign(this, defaults, config);
+    constructor(config?: Partial<ApuTuningConfig>) {
+        Object.assign(this, config)
     }
 }
-
-export interface ApuTuningConfig extends ApuTuningType { }
