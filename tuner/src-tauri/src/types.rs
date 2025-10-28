@@ -3,7 +3,7 @@ use specta::Type;
 use tauri::async_runtime::Mutex;
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Type)]
-pub struct ApuTuningConfig {
+pub struct ApuTuningType {
     pub temperature_limit: Option<u32>,
     pub skin_temperature_limit: Option<u32>,
     pub stapm_power_limit: Option<u32>,

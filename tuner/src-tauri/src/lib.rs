@@ -2,7 +2,7 @@ pub mod cmds;
 pub mod types;
 pub mod utils;
 
-use crate::types::ApuTuningConfig;
+use crate::types::ApuTuningType;
 use crate::{cmds::*, types::AppState};
 use ryzen_tuner_core::RyzenAdj;
 use specta_typescript::Typescript;
@@ -13,7 +13,7 @@ use tauri_specta::{Builder, collect_commands};
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let builder = Builder::<tauri::Wry>::new()
-        .typ::<ApuTuningConfig>()
+        .typ::<ApuTuningType>()
         .commands(collect_commands![set_apu_tuning_config, storage_read, storage_write]);
 
     #[cfg(debug_assertions)]

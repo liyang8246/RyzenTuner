@@ -1,7 +1,7 @@
 use std::fs;
 
 use crate::{
-    types::{AppState, ApuTuningConfig},
+    types::{AppState, ApuTuningType},
     utils::config_dir,
 };
 use specta::specta;
@@ -18,7 +18,7 @@ macro_rules! set_optional_value {
 
 #[tauri::command]
 #[specta]
-pub async fn set_apu_tuning_config(config: ApuTuningConfig, state: tauri::State<'_, AppState>) -> Result<(), String> {
+pub async fn set_apu_tuning_config(config: ApuTuningType, state: tauri::State<'_, AppState>) -> Result<(), String> {
     let ryzenadj = state.ryzenadj.lock().await;
 
     set_optional_value!(

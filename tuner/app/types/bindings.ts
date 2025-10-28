@@ -5,7 +5,7 @@
 
 
 export const commands = {
-async setApuTuningConfig(config: ApuTuningConfig) : Promise<Result<null, string>> {
+async setApuTuningConfig(config: ApuTuningType) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("set_apu_tuning_config", { config }) };
 } catch (e) {
@@ -41,7 +41,7 @@ async storageWrite(key: string, value: string) : Promise<Result<null, string>> {
 
 /** user-defined types **/
 
-export type ApuTuningConfig = { temperature_limit: number | null; skin_temperature_limit: number | null; stapm_power_limit: number | null; slow_power_limit: number | null; slow_boost_duration: number | null; fast_power_limit: number | null; fast_boost_duration: number | null }
+export type ApuTuningType = { temperature_limit: number | null; skin_temperature_limit: number | null; stapm_power_limit: number | null; slow_power_limit: number | null; slow_boost_duration: number | null; fast_power_limit: number | null; fast_boost_duration: number | null }
 
 /** tauri-specta globals **/
 
