@@ -10,4 +10,7 @@ export default defineNuxtConfig({
     envPrefix: ['VITE_', 'TAURI_'],
   },
   ignore: ['**/src-tauri/**'],
+  imports: {
+    dirs: ['types'],
+  }
 })
