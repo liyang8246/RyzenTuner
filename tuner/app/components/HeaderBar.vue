@@ -31,5 +31,5 @@ const items = ref<NavigationMenuItem[][]>([
 </script>
 
 <template>
-  <UNavigationMenu color="neutral" variant="pill" :items="items" class="w-full" />
+  <UNavigationMenu color="neutral" variant="pill" :items="items" class="w-full px-2" />
 </template>
