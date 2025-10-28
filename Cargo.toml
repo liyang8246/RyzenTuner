@@ -21,3 +21,5 @@ bindgen = "0.72"
 tauri-build = { version = "2.5.1", features = [] }
 ryzen-tuner-core = { path = "./core" }
 ryzenadj-ffi = { path = "./ryzenadj-ffi" }
+dirs = "6.0.0"
+toml = "0.9.8"

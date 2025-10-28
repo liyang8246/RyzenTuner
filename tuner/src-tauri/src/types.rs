@@ -1,5 +1,5 @@
 use ryzen_tuner_core::RyzenAdj;
-use specta::{Type};
+use specta::Type;
 use tauri::async_runtime::Mutex;
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Type)]

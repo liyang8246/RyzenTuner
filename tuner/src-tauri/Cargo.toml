@@ -21,3 +21,5 @@ ryzen-tuner-core = { workspace = true }
 specta = { workspace = true }
 specta-typescript = { workspace = true }
 tauri-specta = { workspace = true }
+dirs = { workspace = true }
+toml = {workspace = true}

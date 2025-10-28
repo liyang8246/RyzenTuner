@@ -1,20 +1,21 @@
 pub mod cmds;
 pub mod types;
+pub mod utils;
 
-use crate::{cmds::set_apu_tuning_config, types::AppState};
 use crate::types::ApuTuningConfig;
+use crate::{cmds::*, types::AppState};
 use ryzen_tuner_core::RyzenAdj;
 use specta_typescript::Typescript;
 use tauri::Manager;
 use tauri::async_runtime::Mutex;
-use tauri_specta::{collect_commands, Builder};
+use tauri_specta::{Builder, collect_commands};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // 创建 Tauri Specta Builder
     let builder = Builder::<tauri::Wry>::new()
         .typ::<ApuTuningConfig>()
-        .commands(collect_commands![set_apu_tuning_config]);
+        .commands(collect_commands![set_apu_tuning_config, storage_read, storage_write]);
 
     #[cfg(debug_assertions)]
     builder
