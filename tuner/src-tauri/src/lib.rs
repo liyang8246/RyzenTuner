@@ -12,7 +12,6 @@ use tauri_specta::{Builder, collect_commands};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // 创建 Tauri Specta Builder
     let builder = Builder::<tauri::Wry>::new()
         .typ::<ApuTuningConfig>()
         .commands(collect_commands![set_apu_tuning_config, storage_read, storage_write]);
