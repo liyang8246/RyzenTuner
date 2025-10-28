@@ -94,7 +94,6 @@ pub fn run() {
     tauri::Builder::default()
         .invoke_handler(builder.invoke_handler())
         .setup(move |app| {
-            // 初始化日志插件
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()
@@ -102,14 +101,10 @@ pub fn run() {
                         .build(),
                 )?;
             }
-
             app.manage(AppState {
                 ryzenadj: Mutex::new(RyzenAdj::new().unwrap()),
             });
-
-            // 挂载 Tauri Specta 事件
             builder.mount_events(app);
-
             Ok(())
         })
         .run(tauri::generate_context!())
