@@ -6,7 +6,7 @@ useSettingStore()
   <UApp>
     <div class="flex flex-col h-screen">
       <HeaderBar />
-      <NuxtPage class="flex-1 p-2" />
+      <NuxtPage class="flex-1 p-4" />
     </div>
   </UApp>
 </template>
