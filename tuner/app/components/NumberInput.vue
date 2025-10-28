@@ -1,10 +1,18 @@
 <script lang="ts" setup>
-const { label, description = '' } = defineProps<{
-  label: string
+const { label, description = '', defaultNum = 0 } = defineProps<{
+  label: string,
   description?: string
+  defaultNum?: number
 }>()
 const num = defineModel<number | null>()
-const enabled = ref(false)
+
+const enabled = computed(() => num.value !== null)
+
+const handleCheckboxChange = (e: Event) => {
+  if (e.target instanceof HTMLInputElement) {
+    num.value = e.target.checked ? defaultNum : null
+  }
+}
 </script>
 
 <template>
@@ -15,7 +23,7 @@ const enabled = ref(false)
     </div>
     <div class="w-full flex flex-col gap-2">
       <div class="flex items-center gap-3">
-        <UCheckbox v-model="enabled" size="lg" />
+        <UCheckbox size="lg" @change="handleCheckboxChange" />
         <UInputNumber v-model="num" :disabled="!enabled" orientation="vertical" />
       </div>
       <USlider v-model="num!" :disabled="!enabled" />
