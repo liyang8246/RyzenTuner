@@ -1,6 +1,9 @@
-use std::{collections::HashMap, fs};
+use std::fs;
 
-use crate::{types::{AppState, ApuTuningConfig}, utils::config_file};
+use crate::{
+    types::{AppState, ApuTuningConfig},
+    utils::config_dir,
+};
 use specta::specta;
 
 macro_rules! set_optional_value {
@@ -66,25 +69,29 @@ pub async fn set_apu_tuning_config(config: ApuTuningConfig, state: tauri::State<
 #[tauri::command]
 #[specta]
 pub async fn storage_read(key: String) -> Result<Option<String>, String> {
-    let config = config_file();
-    let config = fs::read_to_string(config).unwrap();
-    let config: HashMap<String, String> = toml::from_str(&config).unwrap();
-    Ok(config.get(&key).cloned())
+    let config_dir = config_dir();
+    let config_path = config_dir.join(format!("{}.toml", key));
+
+    if !config_path.exists() {
+        return Ok(None);
+    }
+
+    let content = fs::read_to_string(config_path).map_err(|e| e.to_string())?;
+    let toml_value: toml::Value = toml::from_str(&content).map_err(|e| e.to_string())?;
+    let json_string = serde_json::to_string(&toml_value).map_err(|e| e.to_string())?;
+
+    Ok(Some(json_string))
 }
 
 #[tauri::command]
 #[specta]
 pub async fn storage_write(key: String, value: String) -> Result<(), String> {
-    let config_path = config_file();
-    let mut config: HashMap<String, String> = HashMap::new();
+    let config_dir = config_dir();
+    let config_path = config_dir.join(format!("{}.toml", key));
 
-    let content = fs::read_to_string(&config_path).unwrap();
-    if let Ok(existing_config) = toml::from_str(&content) {
-        config = existing_config;
-    }
-    config.insert(key, value);
+    let json_value: serde_json::Value = serde_json::from_str(&value).map_err(|e| e.to_string())?;
+    let toml_string = toml::to_string(&json_value).map_err(|e| e.to_string())?;
 
-    let toml_string = toml::to_string(&config).unwrap();
-    fs::write(config_path, toml_string).unwrap();
+    fs::write(config_path, toml_string).map_err(|e| e.to_string())?;
     Ok(())
 }
