@@ -1,20 +1,21 @@
 pub mod cmds;
+pub mod plugins;
 pub mod types;
 pub mod utils;
 
-use crate::types::{ApuTuningConfig, ProfilesState, SettingsState};
-use crate::{cmds::*, types::AppState};
+use crate::cmds::*;
+use crate::plugins::{setup_logging_plugin, setup_tray_icon};
+use crate::types::{AppState, ApuTuningConfig, ProfilesState, SettingsState};
 use ryzen_tuner_core::RyzenAdj;
 #[cfg(debug_assertions)]
 use specta_typescript::Typescript;
 use tauri::Manager;
 use tauri::async_runtime::Mutex;
-use tauri::tray::TrayIconBuilder;
 use tauri_specta::{Builder, collect_commands};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let builder = Builder::<tauri::Wry>::new()
+    let specta_builder = Builder::<tauri::Wry>::new()
         .typ::<ApuTuningConfig>()
         .typ::<SettingsState>()
         .typ::<ProfilesState>()
@@ -27,28 +28,20 @@ pub fn run() {
         ]);
 
     #[cfg(debug_assertions)]
-    builder
+    specta_builder
         .export(Typescript::default(), "../app/types/bindings.ts")
         .expect("Failed to export typescript bindings");
 
     tauri::Builder::default()
-        .invoke_handler(builder.invoke_handler())
+        .invoke_handler(specta_builder.invoke_handler())
         .setup(move |app| {
-            if cfg!(debug_assertions) {
-                app.handle().plugin(
-                    tauri_plugin_log::Builder::default()
-                        .level(log::LevelFilter::Info)
-                        .build(),
-                )?;
-            }
-            let _tray = TrayIconBuilder::new()
-                .icon(app.default_window_icon().unwrap().clone())
-                .build(app)?;
+            setup_logging_plugin(&app.handle())?;
+            setup_tray_icon(&app.handle())?;
 
             app.manage(AppState {
                 ryzenadj: Mutex::new(RyzenAdj::new().unwrap()),
             });
-            builder.mount_events(app);
+            specta_builder.mount_events(app);
             Ok(())
         })
         .run(tauri::generate_context!())
