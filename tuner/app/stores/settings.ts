@@ -1,8 +1,9 @@
+
 export const useSettingStore = defineStore('setting', () => {
-  const autoSetProfile = ref(true)
-  const autoProfileNames = ref<{ charge: string | undefined, discharge: string | undefined }>({
-    charge: undefined,
-    discharge: undefined
+  const autoSetProfile = ref<SettingsState['autoSetProfile']>(true)
+  const autoProfileNames = ref<SettingsState['autoProfileNames']>({
+    charge: null,
+    discharge: null
   })
 
   return {

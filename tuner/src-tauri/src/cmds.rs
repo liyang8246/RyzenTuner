@@ -1,8 +1,8 @@
 use std::fs;
 
 use crate::{
-    types::{AppState, ApuTuningType},
-    utils::config_dir,
+    types::{AppState, ApuTuningConfig},
+    utils::{config_dir, read_file_content},
 };
 use specta::specta;
 use tauri::Window;
@@ -19,7 +19,7 @@ macro_rules! set_optional_value {
 
 #[tauri::command]
 #[specta]
-pub async fn set_apu_tuning_config(config: ApuTuningType, state: tauri::State<'_, AppState>) -> Result<(), String> {
+pub async fn set_apu_tuning_config(config: ApuTuningConfig, state: tauri::State<'_, AppState>) -> Result<(), String> {
     let ryzenadj = state.ryzenadj.lock().await;
     set_optional_value!(
         ryzenadj,
@@ -69,15 +69,7 @@ pub async fn set_apu_tuning_config(config: ApuTuningType, state: tauri::State<'_
 #[tauri::command]
 #[specta]
 pub async fn storage_read(key: String) -> Result<Option<String>, String> {
-    let config_dir = config_dir();
-    let config_path = config_dir.join(format!("{}.json", key));
-
-    if !config_path.exists() {
-        return Ok(None);
-    }
-
-    let content = fs::read_to_string(config_path).map_err(|e| e.to_string())?;
-    Ok(Some(content))
+    read_file_content(&key)
 }
 
 #[tauri::command]
