@@ -8,6 +8,7 @@ use ryzen_tuner_core::RyzenAdj;
 use specta_typescript::Typescript;
 use tauri::Manager;
 use tauri::async_runtime::Mutex;
+use tauri::tray::TrayIconBuilder;
 use tauri_specta::{Builder, collect_commands};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -31,6 +32,10 @@ pub fn run() {
                         .build(),
                 )?;
             }
+            let _tray = TrayIconBuilder::new()
+                .icon(app.default_window_icon().unwrap().clone())
+                .build(app)?;
+
             app.manage(AppState {
                 ryzenadj: Mutex::new(RyzenAdj::new().unwrap()),
             });

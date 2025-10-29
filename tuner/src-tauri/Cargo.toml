@@ -15,7 +15,7 @@ tauri-build = { workspace = true, features = [] }
 serde_json = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 log = { workspace = true }
-tauri = { workspace = true, features = [] }
+tauri = { workspace = true, features = ["tray-icon"] }
 tauri-plugin-log = { workspace = true }
 ryzen-tuner-core = { workspace = true }
 specta = { workspace = true }
