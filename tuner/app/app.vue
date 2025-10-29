@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 useSettingStore()
+useProfilesStore()
 </script>
 
 <template>

@@ -5,6 +5,7 @@ const profilesStore = useProfilesStore()
 
 const profileNames = computed(() => profilesStore.profiles.map(p => p[0]))
 const currProfileName = ref(profileNames.value[0])
+const currProfile = computed(() => profilesStore.profiles.find(p => p[0] === currProfileName.value)![1])
 
 const newProfileName = ref('')
 const handleNewProfile = (closePopover: () => void) => {
@@ -37,14 +38,37 @@ const accItems: AccordionItem[] = [
 </script>
 
 <template>
+
   <div class="flex flex-col">
+
+    <div v-if="currProfileName === undefined" class="flex-1 flex flex-col items-center justify-center">
+      <h1 class="text-default text-xl text-center mx-auto"> Create a profile to continue </h1>
+    </div>
     <!-- config -->
-    <div class="flex-1">
+    <div v-else class="flex-1">
       <UAccordion type="multiple" :items="accItems">
         <template #content="{ item }">
-          <p class="pb-3.5 text-sm text-muted">
-            This is the {{ item.label }} panel.
-          </p>
+          <div v-if="item.label === 'Temperature Tuning'" class="flex flex-col gap-2 p-2">
+            <NumberInput v-model="currProfile.temperature_limit" label="Temperature Limit ℃" description="Controls the temperature limit at which
+the APU starts soft throttling" />
+            <NumberInput v-model="currProfile.skin_temperature_limit" label="Skin Temperature Limit ℃" description="Controls the laptop chassis temperature
+limit at which the APU starts throttling" />
+          </div>
+          <div v-if="item.label === 'Power Tuning'" class="flex flex-col gap-2 p-2">
+            <NumberInput v-model="currProfile.stapm_power_limit" label="STAPM Power Limit (W)"
+              description="Sustained Thermal and Power Management limit" />
+            <NumberInput v-model="currProfile.slow_power_limit" label="Slow Power Limit (W)"
+              description="The long-term power limit of the APU" />
+            <NumberInput v-model="currProfile.slow_boost_duration" label="Slow Boost Duration (s)"
+              description="The duration for which the APU can maintain the slow power limit" />
+            <NumberInput v-model="currProfile.fast_power_limit" label="Fast Power Limit (W)"
+              description="The short-term power limit of the APU" />
+            <NumberInput v-model="currProfile.fast_boost_duration" label="Fast Boost Duration (s)"
+              description="The duration for which the APU can maintain the fast power limit" />
+          </div>
+          <div v-if="item.label === 'VRM Tuning'" class="flex flex-col gap-2 p-2">
+            <p>No VRM tuning options available for this device.</p>
+          </div>
         </template>
       </UAccordion>
     </div>
