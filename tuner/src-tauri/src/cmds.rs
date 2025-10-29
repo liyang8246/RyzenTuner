@@ -20,7 +20,6 @@ macro_rules! set_optional_value {
 #[specta]
 pub async fn set_apu_tuning_config(config: ApuTuningType, state: tauri::State<'_, AppState>) -> Result<(), String> {
     let ryzenadj = state.ryzenadj.lock().await;
-
     set_optional_value!(
         ryzenadj,
         config.temperature_limit,
@@ -35,13 +34,13 @@ pub async fn set_apu_tuning_config(config: ApuTuningType, state: tauri::State<'_
     );
     set_optional_value!(
         ryzenadj,
-        config.stapm_power_limit,
+        config.stapm_power_limit.map(|x| x * 1000),
         set_stapm_limit,
         "Failed to set STAPM power limit"
     );
     set_optional_value!(
         ryzenadj,
-        config.slow_power_limit,
+        config.slow_power_limit.map(|x| x * 1000),
         set_slow_limit,
         "Failed to set slow power limit"
     );
@@ -53,7 +52,7 @@ pub async fn set_apu_tuning_config(config: ApuTuningType, state: tauri::State<'_
     );
     set_optional_value!(
         ryzenadj,
-        config.fast_power_limit,
+        config.fast_power_limit.map(|x| x * 1000),
         set_fast_limit,
         "Failed to set fast power limit"
     );

@@ -90,7 +90,10 @@ limit at which the APU starts throttling" />
           </template>
         </UPopover>
       </div>
-      <UButton icon="i-lucide-trash-2" color="error" variant="outline" @click="handleDeleteProfile" />
+      <div class="flex gap-2">
+        <UButton icon="i-lucide-file-check" variant="outline" @click="invoke('set_apu_tuning_config', { config: currProfile })" />
+        <UButton icon="i-lucide-trash-2" color="error" variant="outline" @click="handleDeleteProfile" />
+      </div>
     </div>
   </div>
 </template>
