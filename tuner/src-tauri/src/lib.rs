@@ -15,7 +15,7 @@ use tauri_specta::{Builder, collect_commands};
 pub fn run() {
     let builder = Builder::<tauri::Wry>::new()
         .typ::<ApuTuningType>()
-        .commands(collect_commands![set_apu_tuning_config, storage_read, storage_write]);
+        .commands(collect_commands![set_apu_tuning_config, storage_read, storage_write, hide_window, show_window]);
 
     #[cfg(debug_assertions)]
     builder

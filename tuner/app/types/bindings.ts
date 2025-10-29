@@ -28,6 +28,12 @@ async storageWrite(key: string, value: string) : Promise<Result<null, string>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async hideWindow() : Promise<void> {
+    await TAURI_INVOKE("hide_window");
+},
+async showWindow() : Promise<void> {
+    await TAURI_INVOKE("show_window");
 }
 }
 

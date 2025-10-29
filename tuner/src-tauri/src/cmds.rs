@@ -5,6 +5,7 @@ use crate::{
     utils::config_dir,
 };
 use specta::specta;
+use tauri::Window;
 
 macro_rules! set_optional_value {
     ($ryzenadj:expr, $config_field:expr, $setter:ident, $error_message:expr) => {
@@ -87,4 +88,16 @@ pub async fn storage_write(key: String, value: String) -> Result<(), String> {
 
     fs::write(config_path, value).map_err(|e| e.to_string())?;
     Ok(())
+}
+
+#[tauri::command]
+#[specta]
+pub fn hide_window(window: Window) {
+    window.hide().unwrap();
+}
+
+#[tauri::command]
+#[specta]
+pub fn show_window(window: Window) {
+    window.show().unwrap();
 }
