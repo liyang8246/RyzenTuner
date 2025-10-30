@@ -18,6 +18,10 @@ const dischargeProfile = computed({
 <template>
   <div class="flex flex-col gap-2">
     <div class="flex gap-2 items-center">
+      <h2 class="w-40"> Auto set profile: </h2>
+      <USwitch v-model="settingStore.autoSetProfile" />
+    </div>
+    <div class="flex gap-2 items-center">
       <h2 class="w-40"> Profile on charging: </h2>
       <USelect v-model="chargeProfile" :items="profileNames" class="w-64" />
     </div>
