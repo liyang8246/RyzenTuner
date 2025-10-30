@@ -1,11 +1,11 @@
-export class ApuTuningConfig implements ApuTuningType {
-    temperature_limit: number | null = null;
-    skin_temperature_limit: number | null = null;
-    stapm_power_limit: number | null = null;
-    slow_power_limit: number | null = null;
-    slow_boost_duration: number | null = null;
-    fast_power_limit: number | null = null;
-    fast_boost_duration: number | null = null;
+export class ApuTuningConfig implements ApuTuningConfig {
+    temperatureLimit: number | null = null;
+    skinTemperatureLimit: number | null = null;
+    stapmPowerLimit: number | null = null;
+    slowPowerLimit: number | null = null;
+    slowBoostDuration: number | null = null;
+    fastPowerLimit: number | null = null;
+    fastBoostDuration: number | null = null;
 
     constructor(config?: Partial<ApuTuningConfig>) {
         Object.assign(this, config)

@@ -4,7 +4,7 @@ pub mod types;
 pub mod utils;
 
 use crate::cmds::*;
-use crate::plugins::{setup_logging_plugin, setup_tray_icon};
+use crate::plugins::{setup_logging_plugin, setup_scheduler_plugin, setup_tray_icon};
 use crate::types::{AppState, ApuTuningConfig, ProfilesState, SettingsState};
 use ryzen_tuner_core::RyzenAdj;
 #[cfg(debug_assertions)]
@@ -37,7 +37,7 @@ pub fn run() {
         .setup(move |app| {
             setup_logging_plugin(&app.handle())?;
             setup_tray_icon(&app.handle())?;
-
+            setup_scheduler_plugin(&app.handle())?;
             app.manage(AppState {
                 ryzenadj: Mutex::new(RyzenAdj::new().unwrap()),
             });

@@ -1,5 +1,9 @@
-use tauri::{AppHandle, Result};
+use crate::types::{ApuTuningConfig, ProfilesState, SettingsState};
+use crate::utils::read_storage;
+use std::collections::HashMap;
+use std::time::Duration;
 use tauri::tray::TrayIconBuilder;
+use tauri::{AppHandle, Result};
 
 pub fn setup_logging_plugin(app_handle: &AppHandle) -> Result<()> {
     app_handle.plugin(
@@ -14,5 +18,26 @@ pub fn setup_tray_icon(app_handle: &AppHandle) -> Result<()> {
     let _tray = TrayIconBuilder::new()
         .icon(app_handle.default_window_icon().unwrap().clone())
         .build(app_handle)?;
+    Ok(())
+}
+
+pub fn setup_scheduler_plugin(app_handle: &AppHandle) -> Result<()> {
+    let _app_handle = app_handle.clone();
+    tauri::async_runtime::spawn(async {
+        loop {
+            tokio::time::sleep(Duration::from_secs(5)).await;
+            let Ok(Some(settings)) = read_storage::<SettingsState>("pinia-setting") else {
+                dbg!("111");
+                continue;
+            };
+            if !settings.auto_set_profile {
+                dbg!("222");
+                continue;
+            }
+            let profiles = read_storage::<ProfilesState>("pinia-profiles").unwrap().unwrap().profiles;
+            let profiles: HashMap<String, ApuTuningConfig> = profiles.into_iter().collect();
+            dbg!(read_storage::<ProfilesState>("pinia-profiles"));
+        }
+    });
     Ok(())
 }
