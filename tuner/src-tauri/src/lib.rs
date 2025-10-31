@@ -1,4 +1,5 @@
 pub mod cmds;
+pub mod error;
 pub mod plugins;
 pub mod types;
 pub mod utils;
@@ -39,7 +40,7 @@ pub fn run() {
             setup_tray_icon(&app.handle())?;
             setup_scheduler_plugin(&app.handle())?;
             app.manage(AppState {
-                ryzenadj: Mutex::new(RyzenAdj::new().unwrap()),
+                ryzenadj: Mutex::new(RyzenAdj::new().expect("Failed to initialize RyzenAdj")),
             });
             specta_builder.mount_events(app);
             Ok(())

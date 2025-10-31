@@ -1,31 +1,32 @@
 use std::{fs, path::PathBuf};
 
+use crate::error::{Result, RyzenTunerError};
 use serde::de::DeserializeOwned;
 
-pub fn config_dir() -> PathBuf {
-    let config_dir = dirs::config_dir().unwrap();
+pub fn config_dir() -> Result<PathBuf> {
+    let config_dir = dirs::config_dir()
+        .ok_or_else(|| RyzenTunerError::Config("Failed to get config directory".to_string()))?;
     let rmk_dir = config_dir.join("RyzenTuner");
-    fs::create_dir_all(&rmk_dir).unwrap();
-    rmk_dir
+    fs::create_dir_all(&rmk_dir)?;
+    Ok(rmk_dir)
 }
 
-pub fn read_file_content(key: &str) -> Result<Option<String>, String> {
-    let config_dir = config_dir();
+pub fn read_file_content(key: &str) -> Result<Option<String>> {
+    let config_dir = config_dir()?;
     let config_path = config_dir.join(format!("{}.json", key));
 
     if !config_path.exists() {
         return Ok(None);
     }
 
-    fs::read_to_string(config_path)
-        .map(Some)
-        .map_err(|e| e.to_string())
+    let content = fs::read_to_string(config_path)?;
+    Ok(Some(content))
 }
 
-pub fn read_storage<T: DeserializeOwned>(key: &str) -> Result<Option<T>, String> {
+pub fn read_storage<T: DeserializeOwned>(key: &str) -> Result<Option<T>> {
     match read_file_content(key)? {
         Some(content) => {
-            let data: T = serde_json::from_str(&content).map_err(|e| e.to_string())?;
+            let data: T = serde_json::from_str(&content)?;
             Ok(Some(data))
         }
         None => Ok(None),
@@ -35,59 +36,30 @@ pub fn read_storage<T: DeserializeOwned>(key: &str) -> Result<Option<T>, String>
 // APU Tuning utilities
 use crate::types::{AppState, ApuTuningConfig};
 
-macro_rules! set_optional_value {
-    ($ryzenadj:expr, $config_field:expr, $setter:ident, $error_message:expr) => {
-        if let Some(value) = $config_field {
-            if let Err(e) = $ryzenadj.$setter(value) {
-                log::error!("{}: {}", $error_message, e);
-            }
-        }
-    };
-}
-
-pub async fn apply_apu_tuning_config(config: ApuTuningConfig, state: &tauri::State<'_, AppState>) -> Result<(), String> {
+pub async fn apply_apu_tuning_config(config: ApuTuningConfig, state: &tauri::State<'_, AppState>) -> Result<()> {
     let ryzenadj = state.ryzenadj.lock().await;
-    set_optional_value!(
-        ryzenadj,
-        config.temperature_limit,
-        set_tctl_temp,
-        "Failed to set temperature limit"
-    );
-    set_optional_value!(
-        ryzenadj,
-        config.skin_temperature_limit,
-        set_apu_skin_temp_limit,
-        "Failed to set skin temperature limit"
-    );
-    set_optional_value!(
-        ryzenadj,
-        config.stapm_power_limit.map(|x| x * 1000),
-        set_stapm_limit,
-        "Failed to set STAPM power limit"
-    );
-    set_optional_value!(
-        ryzenadj,
-        config.slow_power_limit.map(|x| x * 1000),
-        set_slow_limit,
-        "Failed to set slow power limit"
-    );
-    set_optional_value!(
-        ryzenadj,
-        config.slow_boost_duration,
-        set_slow_time,
-        "Failed to set slow boost duration"
-    );
-    set_optional_value!(
-        ryzenadj,
-        config.fast_power_limit.map(|x| x * 1000),
-        set_fast_limit,
-        "Failed to set fast power limit"
-    );
-    set_optional_value!(
-        ryzenadj,
-        config.fast_boost_duration,
-        set_stapm_time,
-        "Failed to set fast boost duration"
-    );
+
+    if let Some(value) = config.temperature_limit {
+        ryzenadj.set_tctl_temp(value)?;
+    }
+    if let Some(value) = config.skin_temperature_limit {
+        ryzenadj.set_apu_skin_temp_limit(value)?;
+    }
+    if let Some(value) = config.stapm_power_limit.map(|x| x * 1000) {
+        ryzenadj.set_stapm_limit(value)?;
+    }
+    if let Some(value) = config.slow_power_limit.map(|x| x * 1000) {
+        ryzenadj.set_slow_limit(value)?;
+    }
+    if let Some(value) = config.slow_boost_duration {
+        ryzenadj.set_slow_time(value)?;
+    }
+    if let Some(value) = config.fast_power_limit.map(|x| x * 1000) {
+        ryzenadj.set_fast_limit(value)?;
+    }
+    if let Some(value) = config.fast_boost_duration {
+        ryzenadj.set_stapm_time(value)?;
+    }
+
     Ok(())
 }

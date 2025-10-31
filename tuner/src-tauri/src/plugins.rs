@@ -1,10 +1,11 @@
+use crate::error::{Result, RyzenTunerError};
 use crate::types::{AppState, ApuTuningConfig, ProfilesState, SettingsState};
 use crate::utils::{read_storage, apply_apu_tuning_config};
 use std::collections::HashMap;
 use std::time::Duration;
 use systemstat::{Platform, System};
 use tauri::tray::TrayIconBuilder;
-use tauri::{AppHandle, Manager, Result};
+use tauri::{AppHandle, Manager};
 
 pub fn setup_logging_plugin(app_handle: &AppHandle) -> Result<()> {
     app_handle.plugin(
@@ -17,7 +18,9 @@ pub fn setup_logging_plugin(app_handle: &AppHandle) -> Result<()> {
 
 pub fn setup_tray_icon(app_handle: &AppHandle) -> Result<()> {
     let _tray = TrayIconBuilder::new()
-        .icon(app_handle.default_window_icon().unwrap().clone())
+        .icon(app_handle.default_window_icon()
+            .ok_or_else(|| RyzenTunerError::Plugin("Failed to get default window icon".to_string()))?
+            .clone())
         .build(app_handle)?;
     Ok(())
 }
@@ -52,10 +55,14 @@ pub fn setup_scheduler_plugin(app_handle: &AppHandle) -> Result<()> {
             }
             last_ac_power_state = Some(ac_power_status);
 
-            let profiles = read_storage::<ProfilesState>("pinia-profiles")
-                .unwrap()
-                .unwrap_or_else(|| ProfilesState { profiles: Vec::new() })
-                .profiles;
+            let profiles = match read_storage::<ProfilesState>("pinia-profiles") {
+                Ok(Some(profiles)) => profiles.profiles,
+                Ok(None) => ProfilesState { profiles: Vec::new() }.profiles,
+                Err(e) => {
+                    log::warn!("Failed to read profiles: {}", e);
+                    continue;
+                }
+            };
             let profiles: HashMap<String, ApuTuningConfig> = profiles.into_iter().collect();
 
             let profile_name = if ac_power_status {

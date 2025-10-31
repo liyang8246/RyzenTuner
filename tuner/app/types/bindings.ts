@@ -29,11 +29,21 @@ async storageWrite(key: string, value: string) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async hideWindow() : Promise<void> {
-    await TAURI_INVOKE("hide_window");
+async hideWindow() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("hide_window") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 },
-async showWindow() : Promise<void> {
-    await TAURI_INVOKE("show_window");
+async showWindow() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("show_window") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
