@@ -4,8 +4,7 @@ use crate::utils::{read_storage, apply_apu_tuning_config};
 use std::collections::HashMap;
 use std::time::Duration;
 use systemstat::{Platform, System};
-use tauri::tray::TrayIconBuilder;
-use tauri::{AppHandle, Manager};
+use tauri::{tray::{TrayIconBuilder, TrayIconEvent}, menu::{Menu, MenuItem}, AppHandle, Manager};
 
 pub fn setup_logging_plugin(app_handle: &AppHandle) -> Result<()> {
     app_handle.plugin(
@@ -17,11 +16,41 @@ pub fn setup_logging_plugin(app_handle: &AppHandle) -> Result<()> {
 }
 
 pub fn setup_tray_icon(app_handle: &AppHandle) -> Result<()> {
+    let show_window = MenuItem::with_id(app_handle, "show_window", "显示窗口", true, None::<&str>)?;
+    let quit = MenuItem::with_id(app_handle, "quit", "退出应用", true, None::<&str>)?;
+    let menu = Menu::with_items(app_handle, &[&show_window, &quit])?;
+
     let _tray = TrayIconBuilder::new()
         .icon(app_handle.default_window_icon()
             .ok_or_else(|| RyzenTunerError::Plugin("Failed to get default window icon".to_string()))?
             .clone())
+        .menu(&menu)
+        .show_menu_on_left_click(false)
+        .on_menu_event(move |app_handle, event| {
+            match event.id.as_ref() {
+                "show_window" => {
+                    if let Some(window) = app_handle.get_webview_window("main") {
+                        let _ = window.show();
+                        let _ = window.set_focus();
+                    }
+                }
+                "quit" => app_handle.exit(0),
+                _ => {}
+            }
+        })
+        .on_tray_icon_event(|tray, event| {
+            if let TrayIconEvent::Click { .. } = event {
+                let event_str = format!("{:?}", event);
+                if event_str.contains("Left") && event_str.contains("Up") {
+                    if let Some(window) = tray.app_handle().get_webview_window("main") {
+                        let _ = window.show();
+                        let _ = window.set_focus();
+                    }
+                }
+            }
+        })
         .build(app_handle)?;
+
     Ok(())
 }
 

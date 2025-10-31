@@ -10,7 +10,7 @@ use crate::types::{AppState, ApuTuningConfig, ProfilesState, SettingsState};
 use ryzen_tuner_core::RyzenAdj;
 #[cfg(debug_assertions)]
 use specta_typescript::Typescript;
-use tauri::Manager;
+use tauri::{Manager, WindowEvent};
 use tauri::async_runtime::Mutex;
 use tauri_specta::{Builder, collect_commands};
 
@@ -35,6 +35,12 @@ pub fn run() {
 
     tauri::Builder::default()
         .invoke_handler(specta_builder.invoke_handler())
+        .on_window_event(|window, event| {
+            if let WindowEvent::CloseRequested { api, .. } = event {
+                api.prevent_close();
+                window.hide().unwrap();
+            }
+        })
         .setup(move |app| {
             setup_logging_plugin(&app.handle())?;
             setup_tray_icon(&app.handle())?;
