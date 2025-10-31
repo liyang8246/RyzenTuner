@@ -24,3 +24,4 @@ tauri-specta = { workspace = true }
 dirs = { workspace = true }
 toml = {workspace = true}
 tokio = { workspace = true, features = ["full"] }
+systemstat = "0.2"
